@@ -43,9 +43,30 @@ def extract_names(filename):
     the name-rank strings in alphabetical order.
     ['2006', 'Aaliyah 91', 'Aaron 57', 'Abagail 895', ...]
     """
+    with open(filename) as f:
+        contents = f.read()
     names = []
-    # +++your code here+++
+
+    matched_years = re.search(r'Popularity in (\d\d\d\d)', contents)
+    names.append(matched_years.group(1))
+
+    names_dict = {}
+
+    ranked_baby_names = re.findall(
+        r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>', contents)
+
+    for ranked_names in ranked_baby_names:
+        if ranked_names[1] not in names_dict:
+            names_dict[ranked_names[1]] = ranked_names[0]
+        if ranked_names[2] not in names_dict:
+            names_dict[ranked_names[2]] = ranked_names[0]
+
+    for name in sorted(names_dict.keys()):
+        names.append(name + ' ' + names_dict[name])
     return names
+
+
+# print(extract_names('baby1992.html'))
 
 
 def create_parser():
@@ -67,23 +88,26 @@ def main(args):
     # Run the parser to collect command line arguments into a
     # NAMESPACE called 'ns'
     ns = parser.parse_args(args)
-
     if not ns:
         parser.print_usage()
         sys.exit(1)
-
     file_list = ns.files
-
     # option flag
     create_summary = ns.summaryfile
-
     # For each filename, call `extract_names()` with that single file.
     # Format the resulting list as a vertical list (separated by newline \n).
     # Use the create_summary flag to decide whether to print the list
     # or to write the list to a summary file (e.g. `baby1990.html.summary`).
-
-    # +++your code here+++
+    for filename in file_list:
+        name_extractor = extract_names(filename)
+        structured_list = '\n'.join(name_extractor)
+        if create_summary:
+            with open(filename + '.summary', 'w') as f:
+                f.write(structured_list)
+        else:
+            print(text)
 
 
 if __name__ == '__main__':
+    # print(sys.argv)
     main(sys.argv[1:])
