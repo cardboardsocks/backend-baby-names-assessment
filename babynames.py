@@ -46,20 +46,29 @@ def extract_names(filename):
     with open(filename) as f:
         contents = f.read()
     names = []
-    matched_years = re.search(r'Popularity in (\d{4})', contents)
+
+    matched_years = re.search(r'Popularity in (\d\d\d\d)', contents)
     names.append(matched_years.group(1))
+
     names_dict = {}
+
     ranked_baby_names = re.findall(
         r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>', contents)
+
     for ranked_names in ranked_baby_names:
         if ranked_names[1] not in names_dict:
             names_dict[ranked_names[1]] = ranked_names[0]
         if ranked_names[2] not in names_dict:
             names_dict[ranked_names[2]] = ranked_names[0]
+
     for name in sorted(names_dict.keys()):
         names.append(name + ' ' + names_dict[name])
     return names
+
+
 # print(extract_names('baby1992.html'))
+
+
 def create_parser():
     """Create a command line parser object with 2 argument definitions."""
     parser = argparse.ArgumentParser(
@@ -71,6 +80,8 @@ def create_parser():
     # e.g. 'baby*.html' will work.
     parser.add_argument('files', help='filename(s) to parse', nargs='+')
     return parser
+
+
 def main(args):
     # Create a command line parser object with parsing rules
     parser = create_parser()
@@ -91,8 +102,12 @@ def main(args):
         name_extractor = extract_names(filename)
         structured_list = '\n'.join(name_extractor)
         if create_summary:
-            with open(filename + '.summary', 'w') as file1:
-                file1.write(structured_list)
-        # print(structured_list)
+            with open(filename + '.summary', 'w') as f:
+                f.write(structured_list)
+        else:
+            print(text)
+
+
 if __name__ == '__main__':
+    # print(sys.argv)
     main(sys.argv[1:])

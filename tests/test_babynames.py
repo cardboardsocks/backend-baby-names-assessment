@@ -97,7 +97,6 @@ class TestBabynames(unittest.TestCase):
             msg="The extract_names function is missing"
             )
 
-        # Get list of only html files
         html_file_list = sorted(filter(lambda f: f.endswith('.html'), os.listdir('.')))
         # Compare each result (actual) list to expected list.
         for f in html_file_list:
